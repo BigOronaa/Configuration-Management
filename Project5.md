@@ -221,4 +221,4 @@ This project demonstrates my ability to design, implement, debug, and document a
 
 
 **Docker-Ansible Repo** I created a repo that all the github action ran. 
-### Link to the repo: [https://github.com/BigOronaa/ansible-docker-critical-thinking](https://github.com/BigOronaa/ansible-docker-critical-thinking
+### Link to the repo: [https://github.com/BigOronaa/ansible-docker-critical-thinking](https://github.com/BigOronaa/ansible-docker-critical-thinking)
