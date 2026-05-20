@@ -1,7 +1,7 @@
-# Ansible Web-Server Lab Documentation
+# Building an Ansible Web-Server 
 
 ## Objective
-I set out to use Ansible to provision and configure two web servers (Nginx and Apache) with custom HTML files. Additionally, I installed Wireshark on both servers for network monitoring and enabled basic authentication on Nginx.
+This Project, I set out to use Ansible to provision and configure two web servers (Nginx and Apache) with custom HTML files. Additionally, I installed Wireshark on both servers for network monitoring and enabled basic authentication on Nginx.
 
 ---
 

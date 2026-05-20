@@ -3,7 +3,7 @@
 ---
 
 ## Project Objective
-I implemented a centralized and automated user and permission management solution using Ansible to manage Development, Staging, and Production Linux servers with environment-specific access control.
+This Project, I implemented a centralized and automated user and permission management solution using Ansible to manage Development, Staging, and Production Linux servers with environment-specific access control.
 
 ---
 

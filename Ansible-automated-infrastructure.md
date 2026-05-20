@@ -1,4 +1,4 @@
-# Critical Thinking Automated Deployment -- Project Documentation
+# Building an automated infrastructure deployment on AWS using Ansible
 
 ## Overview
 
@@ -217,3 +217,4 @@ Critical-Thinking-Automated-Deployment/
 ```
 **Ansible Repo** I created a repo that all the github action ran. 
 ### Link to the repo: [hhttps://github.com/BigOronaa/Critical-Thinking-Automated-Deployment](https://github.com/BigOronaa/Critical-Thinking-Automated-Deployment)
+

@@ -1,4 +1,4 @@
-# Critical Thinking – Configuring Docker Containers with Ansible  
+# Configuring Docker Containers with Ansible  
 
 ##  Project Overview
 
