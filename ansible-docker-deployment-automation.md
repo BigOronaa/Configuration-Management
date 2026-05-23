@@ -1,12 +1,38 @@
-# Configuring Docker Containers with Ansible  
+# Configuring Docker Containers with Ansible
 
-##  Project Overview
+## Project Overview
 
-In this project, I implemented an automated Docker container deployment system using Ansible and GitHub Actions.  
-My goal was to ensure that Docker and multiple containers (web, database, cache) could be deployed consistently across **Development, Staging, and Production** environments with proper monitoring, logging, automation, and notifications.
+This project demonstrates an automated multi-environment container deployment platform built with Ansible, Docker, and GitHub Actions. The platform provisions and manages containerized services across Development, Staging, and Production environments using reusable Ansible roles, environment-specific configurations, and automated CI/CD workflows.
 
-## Repository Structure
-```
+The solution was designed to standardize deployments, reduce manual operational tasks, and improve deployment consistency across environments while providing monitoring, logging, and deployment visibility.
+
+---
+
+# Architecture Overview
+
+The deployment platform consists of:
+
+- Docker container orchestration using Ansible
+- Environment-specific inventory and configuration management
+- Automated CI/CD workflows with GitHub Actions
+- Monitoring and logging playbooks for operational visibility
+- Branch-based deployment automation across environments
+
+Services deployed:
+- NGINX Web Server
+- MySQL Database
+- Redis Cache
+
+Environments managed:
+- Development
+- Staging
+- Production
+
+---
+
+# Repository Structure
+
+```bash
 ansible-docker-critical-thinking/
 ├── inventories/
 │   ├── dev.ini
@@ -29,196 +55,285 @@ ansible-docker-critical-thinking/
 └── README.md
 ```
 
-## Implementations 
+---
 
-##  Repository Setup
+# Infrastructure and Deployment Design
 
-I created a GitHub repository named **ansible-docker-critical-thinking**.  
-I structured the repository following Ansible best practices, separating inventories, playbooks, roles, variables, and workflows.
+## Environment Separation
 
-Key directories I created:
-- `inventories/` – environment-specific inventory files
-- `group_vars/` – environment-specific variables
-- `roles/` – Docker, webserver, database, and cache roles
-- `playbooks/` – main deployment and monitoring playbooks
-- `.github/workflows/` – GitHub Actions CI/CD workflows
+The infrastructure was structured to support isolated Development, Staging, and Production deployments using separate:
+- Inventory files
+- Variables
+- Container configurations
+- Deployment targets
+
+This allowed each environment to maintain independent:
+- Port mappings
+- Container names
+- Credentials
+- Runtime configurations
+
+The approach reduced configuration drift and improved deployment consistency across environments.
 
 ---
 
-### I added Screenshots
-![alt text](images3/mkdir.png)
+# Docker Automation with Ansible
 
+## Docker Installation Role
 
-##  Installing and Configuring Docker with Ansible
+A dedicated Ansible role was created to automate Docker installation and configuration on Ubuntu 22.04 EC2 instances.
 
-I wrote an Ansible role named **docker** to automate Docker installation on Ubuntu 22.04 EC2 instances.
-
-In this role, I:
-- Installed required system packages
-- Added Docker’s official GPG key
-- Added the Docker APT repository
+The role:
 - Installed Docker Engine
-- Ensured the Docker service was started and enabled
-- Added the `ubuntu` user to the Docker group
+- Added Docker repositories and GPG keys
+- Enabled and started Docker services
+- Configured Docker group permissions
+- Standardized Docker setup across all servers
 
-This ensured Docker was installed consistently across all environments.
+This eliminated manual installation steps and ensured identical runtime environments across deployments.
 
+## Verification
 
-### I added Screenshots
-![alt text](images3/dockercontainers.png)
-![alt text](images3/docker-roles.png)
-![alt text](images3/dockerplaybook.png)
-![alt text](images3/dockerplaybook2.png)
-![alt text](images3/dockerps.png)
+```bash
+docker ps
+```
 
+### Screenshots
 
-##  Container Deployment with Ansible Roles
+![Docker Installation](images3/dockercontainers.png)
 
-I created three separate Ansible roles:
+![Docker Role Structure](images3/docker-roles.png)
 
-### Web Server Role
-- Deployed an Nginx container
-- Exposed environment-specific ports
-- Ensured the container always runs with `palybook/site/yml`
+![Docker Playbook](images3/dockerplaybook.png)
 
-### I added Screenshots
-![alt text](images3/nginxplaybook.png)
+![Docker Playbook Execution](images3/dockerplaybook2.png)
 
-### Database Role
-- Deployed a MySQL container
-- Configured database name, user, and password using variables
-- Persisted data using Docker volumes
-- Ensured the container always runs with `palybook/site/yml`
-
-### I added Screenshots
-![alt text](images3/mysqlplaybook.png)
-
-### Cache Role
-- Deployed a Redis container
-- Configured exposed ports per environment
-- Ensured the container always runs with `palybook/site/yml`
-
-I used Ansible’s `community.docker` modules (`docker_container`, `docker_image`) to manage containers declaratively.
-
-
-### I added Screenshots
-![alt text](images3/redisplaybook.png)
+![Docker Running Containers](images3/dockerps.png)
 
 ---
 
-##  Environment-Specific Configuration
+# Container Deployment Architecture
 
-I configured environment-specific variables using **group_vars**:
-- `group_vars/dev.yml`
-- `group_vars/staging.yml`
-- `group_vars/prod.yml`
+## Web Server Deployment
 
-Each environment had:
-- Different exposed ports
-- Different container names
-- Different credentials where required
+Ansible roles were used to deploy and manage an NGINX container across all environments.
 
-This ensured isolation and flexibility across environments. I ran their playbooks to check the work separately.
+Configuration included:
+- Environment-specific port exposure
+- Automated container startup
+- Declarative container management using Ansible
 
-### I added Screenshots
-![alt text](images3/stagingplaybook.png)
-![alt text](images3/prodplaybook.png)
+### Screenshots
+
+![NGINX Deployment](images3/nginxplaybook.png)
 
 ---
 
-##  Automated Deployment with GitHub Actions
+## Database Deployment
 
-I implemented GitHub Actions to automatically deploy containers when code is pushed.
+A dedicated database role was implemented to provision MySQL containers with:
+- Persistent Docker volumes
+- Environment-specific credentials
+- Database initialization variables
+- Automated container recovery policies
 
-### What I did:
-- Created a workflow triggered on `dev`, `staging`, and `master` branches
-- Installed Ansible and required Docker collections
-- Injected SSH keys securely using GitHub Secrets
-- Disabled host key checking for CI reliability
-- Dynamically selected the correct inventory based on the branch
+### Screenshots
 
-This allowed:
-- `dev` branch → Development environment
-- `staging` branch → Staging environment
-- `master` branch → Production environment
-
-### I added Screenshots
-![alt text](images3/initialcommit.png)
-![alt text](images3/branchtriggers.png)
-
-**Errors Encountered and How I Fixed Them**
-- Cause: EC2 IP changes and restrictive security group rules
-- Fix: Updated inventories, allowed port 22 correctly, verified SSH locally
-
-### I added Screenshots
-![alt text](images3/error1.png)
-
-![alt text](images3/error2.png)
-
+![MySQL Deployment](images3/mysqlplaybook.png)
 
 ---
 
-##  Monitoring and Logging
+## Redis Cache Deployment
 
-I added a monitoring playbook to verify container health.
+Redis containers were deployed using reusable Ansible configurations with:
+- Environment-specific networking
+- Automated runtime management
+- Declarative deployment logic
 
-In this playbook, I:
-- Checked if expected containers exist
-- Verified that containers are running
-- Retrieved recent logs using `docker logs`
-- Printed container status and logs for visibility
+### Screenshots
 
-This ensured I could quickly detect container failures or misconfigurations.
-
-
-### I added Screenshots
-![alt text](images3/mon-log.png)
-
-**Error Encountered:** Monitoring Playbook Failures
-- Cause: Incorrect container names
-- Fix: Verified actual container names created by roles and updated monitoring logic
-
-### I added Screenshots
-![alt text](images3/error3.png)
+![Redis Deployment](images3/redisplaybook.png)
 
 ---
 
-## Notifications
+# Environment Configuration Management
 
-I configured notifications in GitHub Actions to alert on:
+Environment-specific variables were managed using Ansible group variables:
+
+```bash
+group_vars/dev.yml
+group_vars/staging.yml
+group_vars/prod.yml
+```
+
+This structure enabled:
+- Centralized configuration management
+- Reduced duplication
+- Safer environment isolation
+- Simplified deployment scaling
+
+Deployment validation was performed independently for each environment.
+
+### Screenshots
+
+![Staging Deployment](images3/stagingplaybook.png)
+
+![Production Deployment](images3/prodplaybook.png)
+
+---
+
+# CI/CD Automation with GitHub Actions
+
+## Deployment Workflow Design
+
+GitHub Actions was implemented to automate deployments based on Git branch activity.
+
+Branch-to-environment mapping:
+- `dev` → Development
+- `staging` → Staging
+- `master` → Production
+
+The CI/CD workflow:
+- Installed Ansible dependencies dynamically
+- Injected SSH credentials securely using GitHub Secrets
+- Selected deployment inventories automatically
+- Triggered deployments without manual intervention
+
+This reduced repetitive deployment steps and improved release consistency across environments.
+
+### Screenshots
+
+![Initial GitHub Actions Commit](images3/initialcommit.png)
+
+![Branch Deployment Triggers](images3/branchtriggers.png)
+
+---
+
+# Troubleshooting and Incident Resolution
+
+## SSH Connectivity Failures
+
+### Issue
+
+Deployment failures occurred due to:
+- Dynamic EC2 public IP changes
+- Restrictive Security Group configurations
+- SSH connectivity failures during GitHub Actions execution
+
+### Resolution
+
+The issue was resolved by:
+- Updating inventory targets dynamically
+- Correcting Security Group inbound rules
+- Validating SSH connectivity manually before deployment execution
+
+### Screenshots
+
+![Deployment Error 1](images3/error1.png)
+
+![Deployment Error 2](images3/error2.png)
+
+---
+
+# Monitoring and Logging
+
+## Monitoring Playbook
+
+A monitoring playbook was created to validate deployment health across environments.
+
+The playbook:
+- Verified container existence
+- Checked runtime status
+- Retrieved container logs
+- Printed deployment health information
+
+This improved operational visibility and simplified troubleshooting during deployment failures.
+
+### Screenshots
+
+![Monitoring and Logging](images3/mon-log.png)
+
+---
+
+## Monitoring Failure Troubleshooting
+
+### Issue
+
+Monitoring tasks initially failed due to incorrect container name references.
+
+### Resolution
+
+Container naming conventions were validated against deployed runtime containers, and monitoring logic was updated to reference correct container identifiers.
+
+### Screenshots
+
+![Monitoring Error](images3/error3.png)
+
+---
+
+# Deployment Notifications
+
+GitHub Actions notifications were configured to provide deployment visibility for:
 - Successful deployments
 - Failed deployments
 
-This provided immediate feedback whenever a deployment succeeded or failed.
+This enabled faster operational awareness and reduced response time during deployment failures.
 
-### I added Screenshots
-![alt text](images3/notifications.png)
+### Screenshots
 
-
----
-
-##  Testing and Validation
-
-I tested the playbooks locally using Ansible check mode and real executions.  
-I validated that:
-- Docker installed successfully
-- Containers were running correctly
-- Ports were accessible
-- CI/CD pipelines triggered deployments correctly
+![Deployment Notifications](images3/notifications.png)
 
 ---
 
-##  Conclusion
+# Validation and Testing
+
+Deployment validation included:
+- Local Ansible testing
+- Playbook execution verification
+- Container runtime checks
+- CI/CD pipeline testing
+- Service accessibility verification
+
+Validation commands included:
+
+```bash
+docker ps
+ansible-playbook playbooks/site.yml
+```
+
+---
+
+# Key Outcomes
 
 By completing this project, I successfully:
-- Automated Docker installation and container deployment with Ansible
-- Implemented environment-specific configurations
-- Built a reliable CI/CD pipeline with GitHub Actions
-- Added monitoring, logging, and notifications
-- Documented troubleshooting steps and fixes
 
-This project demonstrates my ability to design, implement, debug, and document a real-world DevOps automation workflow.
+- Automated multi-environment Docker deployments using Ansible
+- Standardized infrastructure configuration across environments
+- Implemented branch-based CI/CD deployment automation
+- Reduced repetitive deployment tasks through reusable Ansible roles
+- Built deployment monitoring and logging workflows
+- Diagnosed and resolved real-world infrastructure and deployment failures
+- Improved deployment consistency and operational visibility
 
+---
 
-**Docker-Ansible Repo** I created a repo that all the github action ran. 
-### Link to the repo: [https://github.com/BigOronaa/ansible-docker-critical-thinking](https://github.com/BigOronaa/ansible-docker-critical-thinking)
+# Technologies Used
+
+- Ansible
+- Docker
+- GitHub Actions
+- AWS EC2
+- Ubuntu 22.04
+- NGINX
+- MySQL
+- Redis
+
+---
+
+# Repository
+
+GitHub Repository:
+
+```bash
+https://github.com/BigOronaa/ansible-docker-critical-thinking
+```
